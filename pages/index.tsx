@@ -13,6 +13,14 @@ import {
   Td,
   TableCaption,
 } from "@chakra-ui/react";
+import { Link, Text, Stack } from "@chakra-ui/react";
+import {
+  List,
+  ListItem,
+  ListIcon,
+  OrderedList,
+  UnorderedList,
+} from "@chakra-ui/react";
 
 const coinData: ICoin[] = coins.data.map((coin: ICoin) => {
   const {
@@ -37,6 +45,7 @@ const coinData: ICoin[] = coins.data.map((coin: ICoin) => {
   };
 });
 const tableHeader = [
+  "Rank",
   "Name",
   "Symbol",
   "Market Cap",
@@ -49,6 +58,15 @@ const cmcBaseUrl = "https://coinmarketcap.com/currencies";
 const Home = ({ data }: { data: any }) => {
   return (
     <Container maxW="container.lg" centerContent>
+      <Stack>
+        <Text>
+          The list of coins is based off coinbearu video on how to find 100x
+          altcoins
+        </Text>
+        <OrderedList>
+          <ListItem>5,000,000 to 10,000,000 in Market Cap</ListItem>
+        </OrderedList>
+      </Stack>
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -73,11 +91,17 @@ const Home = ({ data }: { data: any }) => {
 
             return (
               <Tr key={id}>
+                <Td>{cmc_rank}</Td>
                 <Td>{name}</Td>
                 <Td>
-                  <a href={`${cmcBaseUrl}/${slug}`} target="_blank">
+                  <Link
+                    href={`${cmcBaseUrl}/${slug}`}
+                    isExternal
+                    color="gray"
+                    fontWeight="bold"
+                  >
                     {symbol}
-                  </a>
+                  </Link>
                 </Td>
                 <Td>{market_cap}</Td>
                 <Td>{price}</Td>
