@@ -1,28 +1,95 @@
 import type { GetServerSideProps } from "next";
-import axios, { AxiosResponse } from "axios";
-import coins from '../mock-data/coins.json';
-import {ICoin} from '../mock-data/coin-type';
-const fetcher = async (url: string, config: {}) => {
-  try {
-    const { data }: { data: AxiosResponse } = await axios.get(url, config);
-    return data;
-  } catch (err: any) {
-    return err.response.data;
-  }
-};
-const isObjEmpty = (obj: {}) => {
-  return Object.values(obj).length === 0;
-};
+import coins from "../mock-data/coins.json";
+import { ICoin } from "../mock-data/coin-type";
+import { fetcher, isObjEmpty } from "../utilities/helper";
+import { Container } from "@chakra-ui/react";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+} from "@chakra-ui/react";
 
-const Home = ({ data }:{data:any}) => {
-  const coinData:ICoin[] = coins.data.map((coin:ICoin) => {
-      const {id,name,symbol,slug, circulating_supply, total_supply, cmc_rank, quote} = coin
-      return {id,name,symbol,slug,circulating_supply,total_supply,cmc_rank,quote}
-    })
+const coinData: ICoin[] = coins.data.map((coin: ICoin) => {
+  const {
+    id,
+    name,
+    symbol,
+    slug,
+    circulating_supply,
+    total_supply,
+    cmc_rank,
+    quote,
+  } = coin;
+  return {
+    id,
+    name,
+    symbol,
+    slug,
+    circulating_supply,
+    total_supply,
+    cmc_rank,
+    quote,
+  };
+});
+const tableHeader = [
+  "Name",
+  "Symbol",
+  "Market Cap",
+  "Price",
+  "Circulating Supply",
+  "Volume (24h)",
+  "Vol/ Marketcap",
+];
+const cmcBaseUrl = "https://coinmarketcap.com/currencies";
+const Home = ({ data }: { data: any }) => {
   return (
-    <div>
-      <pre>{JSON.stringify(coinData, null, 2)}</pre>
-    </div>
+    <Container maxW="container.lg" centerContent>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            {tableHeader.map((x) => (
+              <Th>{x}</Th>
+            ))}
+          </Tr>
+        </Thead>
+        <Tbody>
+          {coinData.map((coin) => {
+            const {
+              id,
+              name,
+              symbol,
+              slug,
+              circulating_supply,
+              total_supply,
+              cmc_rank,
+              quote,
+            } = coin;
+            const { price, volume_24h, market_cap } = quote.USD;
+
+            return (
+              <Tr key={id}>
+                <Td>{name}</Td>
+                <Td>
+                  <a href={`${cmcBaseUrl}/${slug}`} target="_blank">
+                    {symbol}
+                  </a>
+                </Td>
+                <Td>{market_cap}</Td>
+                <Td>{price}</Td>
+                <Td>{circulating_supply}</Td>
+                <Td>{volume_24h}</Td>
+                <Td>{total_supply}</Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+    </Container>
   );
 };
 
@@ -38,7 +105,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   return {
-    props: { data }, // will be passed to the page component as props
+    props: { data },
   };
 };
 export default Home;
