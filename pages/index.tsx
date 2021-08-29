@@ -55,7 +55,24 @@ const tableHeader = [
   "Vol/ Marketcap",
 ];
 const cmcBaseUrl = "https://coinmarketcap.com/currencies";
+// Second filter is volume
+// 10% <24 hr Volume <50%
+// the 24 hr volume should be between 10 to 50% of the market cap
+const mfker = (coin:ICoin) => {
+    const {symbol} = coin
+    const { market_cap, volume_24h } = coin.quote.USD;
+    const tenPercentOfMarketCap = market_cap * 0.1;
+    const fiftyPercentOfMarketCap = market_cap * 0.5;
+    if (
+      volume_24h > tenPercentOfMarketCap &&
+      volume_24h < fiftyPercentOfMarketCap
+    ) {
+      return coin;
+    }
+
+  }
 const Home = ({ data }: { data: any }) => {
+  const newCoinData = coinData.filter(mfker);
   return (
     <Container maxW="container.lg" centerContent>
       <Stack>
@@ -70,13 +87,13 @@ const Home = ({ data }: { data: any }) => {
       <Table variant="simple">
         <Thead>
           <Tr>
-            {tableHeader.map((x) => (
-              <Th>{x}</Th>
+            {tableHeader.map((x, index) => (
+              <Th key={index}>{x}</Th>
             ))}
           </Tr>
         </Thead>
         <Tbody>
-          {coinData.map((coin) => {
+          {newCoinData.map((coin) => {
             const {
               id,
               name,
